@@ -16,6 +16,10 @@ import Profile from './pages/Profile';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
+import Box from '@mui/material/Box';
+
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+
 // Construct our main GraphQL API endpoint
 const httpLink = createHttpLink({
   uri: '/graphql',
@@ -40,40 +44,64 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#FF4B1F',
+    },
+    secondary: {
+      main: '#D24B50',
+    },
+    light: {
+      main: '#FCF5F2',
+    },
+    dark: {
+      main: '#6D6875',
+    },
+  },
+});
+
 function App() {
   return (
-    <ApolloProvider client={client}>
-      <Router>
-        <div className="flex-column justify-flex-start min-100-vh">
-          <Header />
-          <div className="container">
-            <Routes>
-              <Route 
-                path="/"
-                element={<Home />}
-              />
-              <Route 
-                path="/login"
-                element={<Login />}
-              />
-              <Route 
-                path="/signup"
-                element={<Signup />}
-              />
-              <Route 
-                path="/me"
-                element={<Profile />}
-              />
-              <Route 
-                path="/profiles/:username"
-                element={<Profile />}
-              />
-            </Routes>
+    <ThemeProvider theme={theme}>
+      <ApolloProvider client={client}>
+        <Router>
+          <div className="flex-column justify-flex-start min-100-vh">
+            <Header />
+            <Box component="main" sx={{
+              p: {
+                xs: 2,
+                md: 6
+              }
+            }}>
+                <Routes>
+                  <Route 
+                    path="/"
+                    element={<Home />}
+                  />
+                  <Route 
+                    path="/login"
+                    element={<Login />}
+                  />
+                  <Route 
+                    path="/signup"
+                    element={<Signup />}
+                  />
+                  <Route 
+                    path="/me"
+                    element={<Profile />}
+                  />
+                  <Route 
+                    path="/profiles/:username"
+                    element={<Profile />}
+                  />
+                </Routes>
+            </Box>
+            <Footer />
           </div>
-          <Footer />
-        </div>
-      </Router>
-    </ApolloProvider>
+        </Router>
+      </ApolloProvider>
+    </ThemeProvider>
   );
 }
 

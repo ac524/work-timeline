@@ -1,28 +1,30 @@
+/** Global Helpers */
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
-import { LOGIN_USER } from '../utils/mutations';
 
+/** MUI Components */
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+
+/** Utility */
+import { LOGIN_USER } from '../utils/mutations';
 import Auth from '../utils/auth';
+import useInputChange from '../hooks/useInputChange';
 
 const Login = (props) => {
   const [formState, setFormState] = useState({ email: '', password: '' });
+
+  const { email, password } = formState;
+
   const [login, { error, data }] = useMutation(LOGIN_USER);
 
   // update state based on form input changes
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-
-    setFormState({
-      ...formState,
-      [name]: value,
-    });
-  };
+  const handleChange = useInputChange(formState, setFormState);
 
   // submit form
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    console.log(formState);
     try {
       const { data } = await login({
         variables: { ...formState },
@@ -32,62 +34,19 @@ const Login = (props) => {
     } catch (e) {
       console.error(e);
     }
-
-    // clear form values
-    setFormState({
-      email: '',
-      password: '',
-    });
   };
 
   return (
-    <main className="flex-row justify-center mb-4">
-      <div className="col-12 col-lg-10">
-        <div className="card">
-          <h4 className="card-header bg-dark text-light p-2">Login</h4>
-          <div className="card-body">
-            {data ? (
-              <p>
-                Success! You may now head{' '}
-                <Link to="/">back to the homepage.</Link>
-              </p>
-            ) : (
-              <form onSubmit={handleFormSubmit}>
-                <input
-                  className="form-input"
-                  placeholder="Your email"
-                  name="email"
-                  type="email"
-                  value={formState.email}
-                  onChange={handleChange}
-                />
-                <input
-                  className="form-input"
-                  placeholder="******"
-                  name="password"
-                  type="password"
-                  value={formState.password}
-                  onChange={handleChange}
-                />
-                <button
-                  className="btn btn-block btn-primary"
-                  style={{ cursor: 'pointer' }}
-                  type="submit"
-                >
-                  Submit
-                </button>
-              </form>
-            )}
-
-            {error && (
-              <div className="my-3 p-3 bg-danger text-white">
-                {error.message}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </main>
+    <>
+    <Box sx={{display:"grid", gap:"20px"}}>
+      <h1>Login</h1>
+      <Box component="form" sx={{display:"grid", gap:"20px"}} onSubmit={handleFormSubmit}>
+        <TextField fullWidth id="login-email" label="Your email" variant="outlined" value={email} name="email" onChange={handleChange} />
+        <TextField fullWidth id="login-password" label="Password" variant="outlined" value={password} name="password" onChange={handleChange} />
+        <Button type="submit" color="primary" variant="contained">Login</Button>
+      </Box>
+    </Box>
+    </>
   );
 };
 
